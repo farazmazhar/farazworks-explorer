@@ -44,4 +44,4 @@ Builds are saved in the `dist/` directory.
 
 ## License
 
-ISC License
+MIT License

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'"
+    />
+    <title>Extensible File Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div id="sidebar-container">
+      <div class="sidebar-header">
+        <span>Explorer</span>
+        <button class="btn-icon" id="btn-add-provider" title="Add Provider">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+      <ul class="tree-view" id="tree-root">
+        <!-- Tree nodes injected here -->
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <!-- Action Ribbon -->
+      <div id="action-ribbon">
+        <button class="action-btn" id="btn-upload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Upload
+        </button>
+        <button class="action-btn" id="btn-download" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download
+        </button>
+        <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 5px;"></div>
+        <button class="action-btn" id="btn-new-folder">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          New Folder
+        </button>
+        <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 5px;"></div>
+        <button class="action-btn" id="btn-cut" disabled>Cut</button>
+        <button class="action-btn" id="btn-copy" disabled>Copy</button>
+        <button class="action-btn" id="btn-paste" disabled>Paste</button>
+        <button class="action-btn" id="btn-rename" disabled>Rename</button>
+        <button class="action-btn" id="btn-delete" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e81123" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Delete
+        </button>
+      </div>
+
+      <!-- Breadcrumbs -->
+      <div id="breadcrumbs"></div>
+
+      <!-- Table View -->
+      <div id="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Size</th>
+              <th>Type</th>
+              <th>Last Modified</th>
+            </tr>
+          </thead>
+          <tbody id="file-tbody">
+            <!-- File rows injected here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu">
+      <div class="context-menu-item" id="ctx-download">Download</div>
+      <div class="context-menu-item" id="ctx-cut">Cut</div>
+      <div class="context-menu-item" id="ctx-copy">Copy</div>
+      <div class="context-menu-item" id="ctx-paste">Paste</div>
+      <div class="context-menu-item" id="ctx-rename">Rename</div>
+      <div class="context-menu-item" id="ctx-delete" style="color:#ff6b6b">Delete</div>
+    </div>
+
+    <!-- Progress Toast -->
+    <div id="toast-container">
+      <div id="toast-message">Processing...</div>
+      <div class="progress-bar-bg">
+        <div id="toast-progress" class="progress-bar-fill progress-bar-indeterminate"></div>
+      </div>
+    </div>
+
+    <!-- Modal for Prompts -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal">
+        <h3 id="modal-title">Prompt</h3>
+        
+        <div id="modal-provider-type-container" style="display:none; margin-bottom: 15px;">
+          <label style="display:block; margin-bottom: 5px;">Provider Type</label>
+          <select id="modal-select-type" style="width:100%; padding:8px; background:var(--bg-main); color:var(--text-main); border:1px solid var(--border-color); border-radius:3px;">
+            <option value="local">Local Drive</option>
+            <option value="dbfs">Databricks File System (DBFS)</option>
+          </select>
+        </div>
+
+        <div id="modal-dbfs-config" style="display:none; margin-bottom: 15px; border: 1px solid var(--border-color); padding: 10px; border-radius: 3px; background: var(--bg-main);">
+          <div style="margin-bottom: 10px;">
+            <label style="margin-right: 15px;"><input type="radio" name="dbfs-auth-type" value="profile" checked> Use .databrickscfg Profile</label>
+            <label><input type="radio" name="dbfs-auth-type" value="manual"> Manual Token</label>
+          </div>
+          
+          <div id="dbfs-profile-section">
+            <label style="display:block; margin-bottom: 5px;">Profile Name</label>
+            <select id="modal-dbfs-profile" style="width:100%; padding:8px; background:var(--bg-panel); color:var(--text-main); border:1px solid var(--border-color); border-radius:3px;">
+            </select>
+          </div>
+
+          <div id="dbfs-manual-section" style="display:none;">
+            <label style="display:block; margin-bottom: 5px;">Host URL</label>
+            <input type="text" id="modal-dbfs-host" placeholder="https://adb-..." style="margin-bottom: 10px;" />
+            <label style="display:block; margin-bottom: 5px;">Token</label>
+            <input type="password" id="modal-dbfs-token" placeholder="dapi..." />
+          </div>
+        </div>
+
+        <label id="modal-input-label" style="display:block; margin-bottom: 5px;">Name</label>
+        <input type="text" id="modal-input" autocomplete="off" />
+        
+        <div class="modal-actions">
+          <button class="btn" id="modal-cancel">Cancel</button>
+          <button class="btn btn-primary" id="modal-confirm">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

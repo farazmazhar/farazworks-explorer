@@ -1,0 +1,30 @@
+{
+  "name": "farazworks-explorer",
+  "version": "1.0.0",
+  "description": "An extensible file explorer.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Faraz Mazhar",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^42.0.1",
+    "electron-builder": "^25.1.7"
+  },
+  "build": {
+    "appId": "com.farazworks.explorer",
+    "productName": "FarazWorks Explorer",
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "win": {
+      "target": "portable"
+    }
+  }
+}

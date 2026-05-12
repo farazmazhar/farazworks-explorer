@@ -20,11 +20,13 @@
     "directories": {
       "output": "dist"
     },
-    "linux": {
-      "target": "AppImage"
-    },
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icon.png"
     }
   }
 }

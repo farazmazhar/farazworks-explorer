@@ -12,7 +12,7 @@ async function loadIcons() {
   const iconNames = Object.keys(icons);
   for (const name of iconNames) {
     try {
-      const res = await fetch(`icons/${name}.svg`);
+      const res = await fetch(`assets/${name}.svg`);
       if (res.ok) {
         icons[name] = await res.text();
       }
